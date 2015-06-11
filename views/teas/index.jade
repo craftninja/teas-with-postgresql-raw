@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+
+  h1(class="page-header") Check out my freaking awesome tea collection!
+
+  table(class="table")
+    thead
+      th Name
+      th Country of Origin
+      th Type
+      th Ounces Available
+      th Reorderable?
+    tbody
+      each tea in teas
+        tr
+          td= tea.name
+          td= tea.country_of_origin
+          td= tea.type
+          td= tea.oz
+          td= tea.reorderable ? "Yes" : "No"

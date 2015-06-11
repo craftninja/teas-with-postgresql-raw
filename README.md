@@ -85,3 +85,92 @@
 
 1. Refresh index... you should see the font change. Bootstrap is now loading!
 1. COMMIT `bootstrap/` files, then COMMIT the rest
+
+# User can see teas in the database on the tea index page
+
+1. Create a "migration" in a new folder `app/migrations/createTeas.js` with the following content:
+
+  ```
+  var pg = require('pg');
+  var connString = "postgres://@localhost/teas_with_postgresql";
+
+  var client = new pg.Client(connString);
+  client.connect();
+  var query = client.query('CREATE TABLE teas(id SERIAL PRIMARY KEY, name VARCHAR(40) not null, country_of_origin VARCHAR(50), type VARCHAR(40), oz INTEGER, reorderable BOOLEAN)');
+  query.on('end', function() { client.end(); });
+  ```
+
+  * run this by executing in terminal: `$ node app/migrations/createTeas.js`
+  * NOTE: The folder name "migrations" is arbitrary (I made this decision), but matches well this folder's intent.
+1. Verify that this created a table
+  * Go to postgres CLI tab, or `$ psql -d postgres`
+  * `\c teas_with_postgresql;`
+  * `SELECT * FROM teas``
+  * you should see an empty table!
+1. Add one tea to our table:
+  * `INSERT INTO teas(name, country_of_origin, type, oz, reorderable) VALUES ('Yunnan Golden', 'China', 'black', 10, false);`
+  * `SELECT * FROM teas`
+  * you should see your new tea added to the table
+1. View our added tea on the tea index page
+  * In `/routes/teas.js`
+    * add requires, necessary variables:
+
+      ```
+      var pg = require('pg');
+      var connString = "postgres://@localhost/teas_with_postgresql"
+
+      var client = new pg.Client(connString)
+      ```
+
+    * add route, should end up looking like this:
+
+      ```
+      router.get('/', function(req, res, next) {
+        var teas = [];
+        pg.connect(connString, function(err, client, done) {
+          if (err) return console.log(err);
+          var query = client.query("SELECT * FROM teas");
+          query.on('row', function(row) {
+            teas.push(row);
+          });
+          query.on('end', function() {
+            done();
+            res.render('teas/index', {teas: teas});
+          });
+        });
+      });
+      ```
+
+  * Add view to `views/herbs/index.jade` with content:
+
+    ```
+    extends ../layout
+
+    block content
+
+      h1(class="page-header") Check out my freaking awesome tea collection!
+
+      table(class="table")
+        thead
+          th Name
+          th Country of Origin
+          th Type
+          th Ounces Available
+          th Reorderable?
+        tbody
+          each tea in teas
+            tr
+              td= tea.name
+              td= tea.country_of_origin
+              td= tea.type
+              td= tea.oz
+              td= tea.reorderable ? "Yes" : "No"
+    ```
+
+1. Add a link to root index to `/teas`
+  * `a(href='/teas') Do you want to check out my freaking awesome tea collection?`
+1. Change project title to something that is more descriptive
+  * In `/routes/index.js`:
+    * `res.render('index', { title: 'My Freaking Awesome Tea Collection' });`
+  * Stop and start the browser to see this change
+1. Test in browser, and COMMIT
