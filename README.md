@@ -174,3 +174,84 @@
     * `res.render('index', { title: 'My Freaking Awesome Tea Collection' });`
   * Stop and start the browser to see this change
 1. Test in browser, and COMMIT
+
+## User can add new teas
+
+1. Add new link for teas in index
+
+  ```
+  div(class="page-header")
+    a(href="/teas/new" class="btn btn-success pull-right") Add Tea
+    h1 Check out my freaking awesome tea collection!
+  ```
+
+1. Add route for new tea
+
+  ```
+  router.get('/new', function(req, res, next) {
+    res.render('teas/new');
+  });
+  ```
+
+1. Add view for new herb
+
+  ```
+  extends ../layout
+
+  block content
+    h1(class="page-header") New Tea
+
+    ol(class="breadcrumb")
+      li
+        a(href="/teas") My Teas`
+      li(class="active") New
+
+    form(action='/teas' method='post' class='form-horizontal')
+
+      div(class='form-group')
+        label(class="col-sm-2 control-label") Name
+        div(class='col-sm-4')
+          input(type="text" name="tea[name]" class='form-control')
+
+      div(class='form-group')
+        label(class="col-sm-2 control-label") Country of Origin
+        div(class='col-sm-4')
+          input(type="text" name="tea[country_of_origin]" class='form-control')
+
+      div(class='form-group')
+        label(class="col-sm-2 control-label") Type
+        div(class='col-sm-4')
+          input(type="text" name="tea[type]" class='form-control')
+
+      div(class="form-group")
+        label(class="col-sm-2 control-label") Ounces available
+        div(class="col-sm-4")
+          input(type='number' name='tea[oz]' class="form-control")
+
+      div(class="form-group")
+        div(class="col-sm-offset-2 col-sm-4")
+          div(class="checkbox")
+          label Is this tea reorderable?
+            input(type='checkbox' name='tea[reorderable]' class="form-control")
+
+      div(class="form-group")
+        div(class="col-sm-offset-2 col-sm-4")
+          input(type='submit' name='commit' value='Add this tea' class="btn btn-success")
+  ```
+
+1. Add create route
+
+  ```
+  router.post('/', function(req, res, next) {
+    pg.connect(connString, function(err, client, done) {
+      if (err) return console.log(err);
+      var query = client.query("INSERT INTO teas(name, country_of_origin, type, oz, reorderable) VALUES ($1, $2, $3, $4, $5)", [req.body['tea[name]'], req.body['tea[country_of_origin]'], req.body['tea[type]'],  req.body['tea[oz]'], req.body['tea[reorderable]']]);
+      query.on('end', function() {
+        done();
+        res.redirect('/teas');
+      });
+    });
+  });
+  ```
+
+1. Test in browser, and COMMIT
