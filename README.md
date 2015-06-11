@@ -65,3 +65,23 @@
 1. Stop and start server, and visit `http://localhost:3000/teas` to ensure all is well.
   * Should just have default text contained within route
 1. Test in browser, and COMMIT
+
+### Add bootstrap
+
+1. Go to [http://getbootstrap.com/getting-started/#download](http://getbootstrap.com/getting-started/#download) and click on "Download Bootstrap" (zip file)
+1. Unzip, and rename file to just `bootstrap`
+1. Move this directory to `/public`
+1. Restart server and open [http://localhost:3000/](http://localhost:3000/)
+1. Require bootstrap in `/views/layout/jade`, contents of head should be:
+
+  ```
+  title= title
+  link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
+  link(rel='stylesheet', href='/bootstrap/css/bootstrap-responsive.min.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+  script(src='/bootstrap/js/bootstrap.min.js')
+  ```
+
+1. Refresh index... you should see the font change. Bootstrap is now loading!
+1. COMMIT `bootstrap/` files, then COMMIT the rest
