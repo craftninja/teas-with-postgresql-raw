@@ -52,3 +52,16 @@
   * Make sure your server has the content 'PostgreSQL is totally hooking it up: ' with the date and time
   * Open [http://localhost:3000/](http://localhost:3000/) to see default view and make sure all is loading properly
 1. COMMIT `.gitignore`, then COMMIT the rest
+
+### User can access `/teas` in browser
+
+1. Change `users` to `teas``
+  * In `app.js` change `var users = require('./routes/users');` to:
+    * `var teas = require('./routes/teas');`
+  * and change `app.use('/users', users);` to:
+    * `app.use('/teas', teas);`
+  * In `routes/`, rename `users.js` to `teas.js`
+    * from this file, remove the line `/* GET users listing. */`
+1. Stop and start server, and visit `http://localhost:3000/teas` to ensure all is well.
+  * Should just have default text contained within route
+1. Test in browser, and COMMIT
